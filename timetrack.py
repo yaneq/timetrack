@@ -1,8 +1,10 @@
 #!/usr/bin/python
 import sys
+import os
 from datetime import datetime, date, time
 
-FILENAME = "/Users/jan/ps/jkTimetrack/times.txt"
+FILENAME = os.path.expanduser("~") + '/times.txt'
+
 DATEFORMAT = "%Y/%m/%d %H:%M"
 DAYSEPERATOR = "\n============================================================\n\n"
 TIMETASKSEPARATOR = " | "
