@@ -3,13 +3,13 @@ import sys
 import os
 from datetime import datetime, date, time
 
-FILENAME = os.path.expanduser("~") + '/times.txt'
+FILENAME = os.path.expanduser("~/Dropbox") + '/times.txt'
 
 DATEFORMAT = "%Y/%m/%d %H:%M"
 DAYSEPERATOR = "\n============================================================\n\n"
 TIMETASKSEPARATOR = " | "
 
-now = datetime.now() 
+now = datetime.now()
 newday = False
 
 f_track = open(FILENAME,"r")
@@ -25,7 +25,7 @@ if lines:
 			newday = True
 
 buf = ""
-		
+
 if newday:
 	buf+=DAYSEPERATOR
 buf+=now.strftime(DATEFORMAT)
