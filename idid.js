@@ -61,9 +61,14 @@ let collectBlocks = (lines) => {
     }
   })
 
-  if (Object.values(active_blocks).filter((obj) => obj ).length > 0) {
+  let open_blocks = Object
+    .entries(active_blocks)
+    .filter((e)=>{return !!e[1]})
+    .map((block) => `${block[0]}: ${moment.duration(moment(moment.now()).diff(block[1])).asMinutes().toFixed()} mins\n`)
+
+  if (open_blocks.length > 0) {
     console.log(chalk.yellow('\n========================================================='))
-    console.log(chalk.yellow.bold(`\n  Warning: open block remaining: ${Object.entries(active_blocks).filter((e)=>{return !!e[1]}).map((e)=>e[0])}\n`))
+    console.log(chalk.yellow.bold(`\n  Active blocks: ${open_blocks}`))
     console.log(chalk.yellow('=========================================================\n'))
   }
   return blocks;
