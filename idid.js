@@ -1,15 +1,22 @@
 #!/usr/bin/env node
+
+// ========= configurable
+
+const NON_BILLABLE_PROJECTS = ['[project]', '[chores]']
+const FILE_PATH = '/Users/Jan/Dropbox/times.txt'
+
+// ========= includes
+
 const readline = require('readline');
 const fs = require('fs');
 const moment = require('moment')
 const easyTable = require('easy-table')
 const chalk = require('chalk')
+
+// ========= helpers
+
 let lines = []
 let linenumber = 0
-
-let rl = readline.createInterface({
-  input: fs.createReadStream('/Users/Jan/Dropbox/times.txt')
-});
 
 let extract_info = (line) => {
   let results = line.match(/(\d{4}\/\d{1,2}\/\d{1,2} \d{1,2}:\d{2}) \| (\[.+?\])?\s?(.*)/);
@@ -82,7 +89,7 @@ let combineBlocks = (blocks, filterStart, filterEnd) => {
       project: key,
       minutes: sum,
       hours: sum/60,
-      total: key === '[project]' ? 0 : sum/60*50
+      total: NON_BILLABLE_PROJECTS.indexOf(key) === -1 ? sum/60*50 : 0
     }
   })
   return totals
@@ -152,7 +159,9 @@ let prettyOutput = (namedRanges) => {
   console.log(t.toString())
 }
 
-let onFinishReading = () => {
+// =============== main
+
+let main = () => {
   let blocks = collectBlocks(lines)
   let today = moment(moment.now())
   let yesterday = moment().subtract(1, 'day')
@@ -167,5 +176,9 @@ let onFinishReading = () => {
   prettyOutput(namedRanges)
 }
 
+let rl = readline.createInterface({
+  input: fs.createReadStream(FILE_PATH)
+});
+
 rl.on('line', onReadLine)
-rl.on('close', onFinishReading)
+rl.on('close', main)
