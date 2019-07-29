@@ -132,11 +132,15 @@ let getProjectsFromNamedRanges = (namedRanges) => {
 
 const totalOptions = (name) => {
   return {
+    init: [0,0],
     printer: function(val, width) {
-      return val.toFixed(1)
+      return `${val[0] ? val[0].toFixed(1) : ''} (${val[1]})`
     },
     reduce: (acc, val) => {
-      return acc + parseFloat(val || 0)
+      let values = (val || '0 0').split(' ')
+      acc[0] += parseFloat(values[0] || 0)
+      acc[1] += parseFloat(values[1].replace(/[()]/g, '') || 0);
+      return acc
     }
   }
 }
@@ -150,16 +154,14 @@ let prettyOutput = (namedRanges) => {
       ranges = namedRanges[rangeKey]
       range = ranges.filter((range) => {return range.project === project})
       if(range.length > 0) {
-        t.cell(rangeKey + ' hours', range[0].hours.toFixed(1))
-        t.cell(rangeKey + ' USD', range[0].total.toFixed())
+        t.cell(rangeKey, `${range[0].hours.toFixed(1)} (${range[0].total.toFixed()})`)
       }
     })
     t.newRow()
   })
 
   Object.keys(namedRanges).forEach((name) => {
-    t.total(name + ' hours', totalOptions())
-    t.total(name + ' USD', totalOptions())
+    t.total(name, totalOptions())
   })
   console.log(t.toString())
 }
@@ -170,14 +172,24 @@ let main = () => {
   let blocks = collectBlocks(lines)
   let today = moment(moment.now())
   let yesterday = moment().subtract(1, 'day')
+  let lastWeek = moment().subtract(1, 'week')
   let lastMonth = moment().subtract(1, 'month')
-  let sumsToday = combineBlocks(blocks, moment(today.startOf('day')), moment(today.endOf('day')))
-  let sumsYesterday = combineBlocks(blocks, moment(yesterday.startOf('day')), moment(yesterday.endOf('day')))
-  let sums2days = combineBlocks(blocks, moment(yesterday.startOf('day')), moment(today.endOf('day')))
-  let sumsWeek = combineBlocks(blocks, moment(today.startOf('week')), moment(today.endOf('week')))
-  let sumsMonth = combineBlocks(blocks, moment(today.startOf('month')), moment(today.endOf('month')))
-  let sumsLastMonth = combineBlocks(blocks, moment(lastMonth.startOf('month')), moment(lastMonth.endOf('month')))
-  let namedRanges = { "Last month": sumsLastMonth, "This month": sumsMonth, "This week": sumsWeek, "Last two days": sums2days, "Yesterday": sumsYesterday, "Today": sumsToday}
+  let sumsToday = combineBlocks(blocks, moment(today.clone().startOf('day')), moment(today.clone().endOf('day')))
+  let sumsYesterday = combineBlocks(blocks, moment(yesterday.clone().startOf('day')), moment(yesterday.clone().endOf('day')))
+  let sums2days = combineBlocks(blocks, moment(yesterday.clone().startOf('day')), moment(today.clone().endOf('day')))
+  let sumsWeek = combineBlocks(blocks, moment(today.clone().startOf('week')), moment(today.clone().endOf('week')))
+  let sumsLastWeek = combineBlocks(blocks, moment(lastWeek.clone().startOf('week')), moment(lastWeek.clone().endOf('week')))
+  let sumsMonth = combineBlocks(blocks, moment(today.clone().startOf('month')), moment(today.clone().endOf('month')))
+  let sumsLastMonth = combineBlocks(blocks, moment(lastMonth.clone().startOf('month')), moment(lastMonth.clone().endOf('month')))
+  let namedRanges = {
+    "Last month": sumsLastMonth,
+    "Month": sumsMonth,
+    "Last Week": sumsLastWeek,
+    "Week": sumsWeek,
+    "Last two days": sums2days,
+    "Yesterday": sumsYesterday,
+    "Today": sumsToday
+  }
   prettyOutput(namedRanges)
 }
 
