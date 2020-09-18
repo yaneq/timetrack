@@ -5,7 +5,9 @@
 const PROJECT_RATES = {
   project: 0,
   chores: 0,
-  corsair: 30,
+  corsair: 50,
+  wizards: 50,
+  'corsair-discounted': 30,
   default: 50,
 }
 const FILE_PATH = '/Users/Jan/Dropbox/times.txt'
@@ -50,14 +52,18 @@ const main = () => {
   let sumsLastWeek = parser.combineBlocks(blocks, moment(lastWeek.clone().startOf('week')), moment(lastWeek.clone().endOf('week')), PROJECT_RATES)
   let sumsMonth = parser.combineBlocks(blocks, moment(today.clone().startOf('month')), moment(today.clone().endOf('month')), PROJECT_RATES)
   let sumsLastMonth = parser.combineBlocks(blocks, moment(lastMonth.clone().startOf('month')), moment(lastMonth.clone().endOf('month')), PROJECT_RATES)
+  let sumsYear = parser.combineBlocks(blocks, moment(today.clone().startOf('year')), moment(today.clone().endOf('year')), PROJECT_RATES)
+  let sumsTotal = parser.combineBlocks(blocks, null, null, PROJECT_RATES)
   let namedRanges = {
+    "Total": sumsTotal,
+    "Year": sumsYear,
     "Last month": sumsLastMonth,
     "Month": sumsMonth,
     "Last Week": sumsLastWeek,
     "Week": sumsWeek,
     "Last two days": sums2days,
     "Yesterday": sumsYesterday,
-    "Today": sumsToday
+    "Today": sumsToday,
   }
   formatter.prettyOutput(namedRanges)
 }
