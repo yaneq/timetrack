@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import sys
 import os
 from datetime import datetime, date, time
@@ -41,4 +41,5 @@ buf+="\n"
 f_track = open(FILENAME,"a")
 f_track.write(buf)
 f_track.close()
-print buf
+print(buf)
+
